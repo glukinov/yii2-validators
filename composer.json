@@ -1,0 +1,40 @@
+{
+    "name": "glukinov/yii2-validators",
+    "type": "yii2-extension",
+    "description": "The collection for validators for Yii2",
+    "keywords": ["yii2", "validators"],
+    "license": "GPL-2.0-or-later",
+    "support": {
+        "source": "https://github.com/glukinov/yii2-validators"
+    },
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Gennady Lukinov",
+            "email": "gennadylukinov@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "yiisoft/yii2": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "glukinov\\": "."
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer" : true
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    }
+}
