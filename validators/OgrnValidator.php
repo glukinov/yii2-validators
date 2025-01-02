@@ -9,6 +9,9 @@ use RuntimeException;
 
 class OgrnValidator extends Validator
 {
+    const LENGTH = 13;
+    const DIVIDER = 11;
+
     /**
      * {@inheritdoc}
      */
@@ -33,9 +36,10 @@ class OgrnValidator extends Validator
      */
     protected function checkBasics($model, $attribute)
     {
-        if (!is_numeric($model->$attribute) || strlen($model->$attribute) != 13) {
-            $message = Yii::t('glukinov', 'The value of attribute "{attribute}" is not 13-digit number', [
+        if (!is_numeric($model->$attribute) || strlen($model->$attribute) != static::LENGTH) {
+            $message = Yii::t('glukinov', 'The value of attribute "{attribute}" is not {length}-digit number', [
                 'attribute' => $attribute,
+                'length' => static::LENGTH,
             ]);
             $this->addError($model, $attribute, $message);
             return throw new RuntimeException($message);
@@ -55,7 +59,7 @@ class OgrnValidator extends Validator
      */
     protected function checkNumber($model, $attribute, $val)
     {
-        $num = intval(substr($val, 0, 12));
+        $num = intval(substr($val, 0, static::LENGTH - 1));
         if (!$num) {
             $message = Yii::t('glukinov', 'The value of attribute "{attribute}" is not valid number', [
                 'attribute' => $attribute,
@@ -79,7 +83,7 @@ class OgrnValidator extends Validator
      */
     private function checkReminder($model, $attribute, $val, $num)
     {
-        $rem = $num % 11;
+        $rem = $num % static::DIVIDER;
         $str = strval($rem);
         $n1 = $str[strlen($str)-1];
         $n2 = $val[strlen($val)-1];
