@@ -9,7 +9,7 @@ class TestModel extends Model
     /**
      * The value attribute.
      *
-     * @var any
+     * @var mixed
      */
     public $value;
 }
