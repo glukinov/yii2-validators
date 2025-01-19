@@ -8,10 +8,11 @@ use glukinov\traits\CheckNumericTrait;
 use Exception;
 use RuntimeException;
 
-class OgrnValidator extends Validator
+class InnValidator extends Validator
 {
-    const LENGTH = 13;
+    const LENGTH = 10;
     const DIVIDER = 11;
+    const RATIO = [2, 4, 10, 3, 5, 9, 4, 6, 8];
 
     use CheckNumericTrait;
 
@@ -32,22 +33,34 @@ class OgrnValidator extends Validator
     /**
      * Checking the reminder of division.
      *
-     * @param \yii\base\Model $model
+     * @param \common\base\Model $model
      * @param string $attribute
      * @param string $val
      * @param int $num
      * @return bool
      * @throws RuntimeException
      */
-    private function checkReminder($model, $attribute, $val, $num)
+    protected function checkReminder($model, $attribute, $val, $num)
     {
-        $rem = $num % static::DIVIDER;
-        $str = strval($rem);
-        $n1 = $str[strlen($str)-1];
-        $n2 = $val[strlen($val)-1];
+        $sum = 0;
+        $nums = substr($val, 0, static::LENGTH - 1);
+        for ($i = 0; $i < strlen($nums); $i++) {
+            $sum += intval($nums[$i]) * static::RATIO[$i];
+        }
 
-        if ($n1 != $n2) {
-            $message = Yii::t('glukinov', 'The value of attribute "{attribute}" has invalid control digit', [
+        if ($sum == 0) {
+            $message = Yii::t('glukinov', 'The value of attribute "{attribute}" has invalid checksum', [
+                'attribute' => $attribute,
+            ]);
+            $this->addError($model, $attribute, $message);
+            return throw new RuntimeException($message);
+        }
+
+        $rem = $sum % static::DIVIDER;
+        $str = strval($rem);
+
+        if ($str[strlen($str)-1] != $val[strlen($val)-1]) {
+            $message = Yii::t('glukinov', 'The value of attribute "{attribute}" has invalid checksum', [
                 'attribute' => $attribute,
             ]);
             $this->addError($model, $attribute, $message);
