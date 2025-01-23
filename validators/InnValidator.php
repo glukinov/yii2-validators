@@ -24,7 +24,7 @@ class InnValidator extends Validator
         try {
             $val = $this->checkNumeric($model, $attribute);
             $num = $this->checkInteger($model, $attribute, $val);
-            return $this->checkReminder($model, $attribute, $val, $num);
+            return $this->checkReminder($model, $attribute, $val, $num, static::LENGTH - 1, static::RATIO);
         } catch (Exception $ex) {
             return false;
         }
@@ -37,15 +37,17 @@ class InnValidator extends Validator
      * @param string $attribute
      * @param string $val
      * @param int $num
+     * @param int $len
+     * @param int[] $ratio
      * @return bool
      * @throws RuntimeException
      */
-    protected function checkReminder($model, $attribute, $val, $num)
+    protected function checkReminder($model, $attribute, $val, $num, $len, $ratio)
     {
         $sum = 0;
-        $nums = substr($val, 0, static::LENGTH - 1);
+        $nums = substr($val, 0, $len);
         for ($i = 0; $i < strlen($nums); $i++) {
-            $sum += intval($nums[$i]) * static::RATIO[$i];
+            $sum += intval($nums[$i]) * $ratio[$i];
         }
 
         if ($sum == 0) {
@@ -53,18 +55,18 @@ class InnValidator extends Validator
                 'attribute' => $attribute,
             ]);
             $this->addError($model, $attribute, $message);
-            return throw new RuntimeException($message);
+            throw new RuntimeException($message);
         }
 
         $rem = $sum % static::DIVIDER;
         $str = strval($rem);
 
-        if ($str[strlen($str)-1] != $val[strlen($val)-1]) {
+        if ($str[strlen($str)-1] != $val[$len]) {
             $message = Yii::t('glukinov', 'The value of attribute "{attribute}" has invalid checksum', [
                 'attribute' => $attribute,
             ]);
             $this->addError($model, $attribute, $message);
-            return throw new RuntimeException($message);
+            throw new RuntimeException($message);
         }
 
         return true;
